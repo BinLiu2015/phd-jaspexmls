@@ -1,0 +1,32 @@
+<project name="contlib" basedir="." default="main">
+
+	<property name="src.dir"	value="src"/>
+	<property name="build.dir"	value="build"/>
+	<property name="classes.dir"	value="${build.dir}"/>
+	<property name="dist.dir"	value="dist"/>
+	<property name="jar.file"	value="contlib.jar"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+	<target name="clean-all" depends="clean"/> <!-- alias -->
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}"/>
+		<javac fork="true" srcdir="${src.dir}" destdir="${classes.dir}" debug="true" source="1.6" target="1.6"
+			deprecation="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<compilerarg value="-Xlint:unchecked"/>
+		</javac>
+	</target>
+	<target name="build" depends="compile"/> <!-- alias -->
+
+	<target name="main" depends="clean,compile,jar"/>
+
+	<target name="jar" depends="compile" description="Generates the jar">
+		<mkdir dir="${dist.dir}"/>
+		<jar destfile="${dist.dir}/${jar.file}" basedir="${build.dir}"/>
+	</target>
+	<target name="dist" depends="jar"/>
+
+</project>
