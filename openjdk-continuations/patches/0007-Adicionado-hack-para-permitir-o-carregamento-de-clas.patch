@@ -1,0 +1,48 @@
+From fbfb270a107be9526666b9628c36469417c19f39 Mon Sep 17 00:00:00 2001
+From: Ivo Anjo <knuckles@gmail.com>
+Date: Fri, 24 May 2013 19:53:49 +0100
+Subject: [PATCH 7/7] Adicionado hack para permitir o carregamento de classes modificadas da JDK
+
+---
+ .../src/share/vm/classfile/systemDictionary.cpp    |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+diff --git a/sources/hotspot/src/share/vm/classfile/systemDictionary.cpp b/sources/hotspot/src/share/vm/classfile/systemDictionary.cpp
+index 1c11640..ad23254 100644
+--- a/sources/hotspot/src/share/vm/classfile/systemDictionary.cpp
++++ b/sources/hotspot/src/share/vm/classfile/systemDictionary.cpp
+@@ -25,6 +25,8 @@
+ # include "incls/_precompiled.incl"
+ # include "incls/_systemDictionary.cpp.incl"
+ 
++// needed for getenv hack
++#include <stdlib.h>
+ 
+ Dictionary*       SystemDictionary::_dictionary = NULL;
+ PlaceholderTable* SystemDictionary::_placeholders = NULL;
+@@ -1076,6 +1078,13 @@ klassOop SystemDictionary::resolve_from_stream(symbolHandle class_name,
+       !strncmp((const char*)parsed_name->bytes(), pkg, strlen(pkg))) {
+     // It is illegal to define classes in the "java." package from
+     // JVM_DefineClass or jni_DefineClass unless you're the bootclassloader
++
++    // hack: allow any class from any package to be loaded by a classloader
++    const char* enablePackageHack = getenv("JDK_HACK_PACKAGE");
++    if (enablePackageHack != NULL) {
++	// printf("hack class loading\n");
++    } else {
++
+     ResourceMark rm(THREAD);
+     char* name = parsed_name->as_C_string();
+     char* index = strrchr(name, '/');
+@@ -1089,6 +1098,8 @@ klassOop SystemDictionary::resolve_from_stream(symbolHandle class_name,
+     jio_snprintf(message, len, fmt, name);
+     Exceptions::_throw_msg(THREAD_AND_LOCATION,
+       vmSymbols::java_lang_SecurityException(), message);
++
++    }
+   }
+ 
+   if (!HAS_PENDING_EXCEPTION) {
+-- 
+1.7.0.4
+

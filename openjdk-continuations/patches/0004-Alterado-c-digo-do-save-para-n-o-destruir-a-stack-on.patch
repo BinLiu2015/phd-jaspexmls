@@ -1,0 +1,45 @@
+From f3d6bd8f4acf15ee6766f2b1b1e24f1e8256f085 Mon Sep 17 00:00:00 2001
+From: Ivo Anjo <knuckles@gmail.com>
+Date: Thu, 21 Mar 2013 16:08:44 +0000
+Subject: [PATCH 4/4] =?UTF-8?q?Alterado=20c=C3=B3digo=20do=20save=20para=20n=C3=A3o=20destruir=20a=20stack=20onde=20foi=20chamado,=20e=20simplesmente=20retornar=20do=20m=C3=A9todo?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ sources/hotspot/src/share/vm/prims/unsafe.cpp |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/sources/hotspot/src/share/vm/prims/unsafe.cpp b/sources/hotspot/src/share/vm/prims/unsafe.cpp
+index bfb1048..fbaecdf 100644
+--- a/sources/hotspot/src/share/vm/prims/unsafe.cpp
++++ b/sources/hotspot/src/share/vm/prims/unsafe.cpp
+@@ -2792,15 +2792,23 @@ jobject Continuation_SaveContinuation(JNIEnv *env, jclass contcls, jobject conti
+     tty->print_cr("save_cont thread=%x", (intptr_t)thread);
+     tty->print_cr("save_cont thread tlab=%x", (intptr_t)&thread->tlab());
+     tty->print_cr("save_cont thread_state=%x", (intptr_t)thread->thread_state());
++
++    tty->print_cr("continuation hack v2");
+   }
+ 
++  // HACK? Deallocate the ThreadInVMfromNativeForContinuation object manually, as it was one of the
++  // things the continuation_save_blob took care of
++  ThreadInVMfromNativeForContinuation::dealloc(thread);
++  // clean the cont_thread_transition field
++  thread->set_cont_thread_transition(NULL);
++
+   // The sp/fp/pc/rv_oop to cut the stack to
+-  intptr_t cut_sp = (intptr_t) cut_to_frame.sp();
++/*  intptr_t cut_sp = (intptr_t) cut_to_frame.sp();
+   intptr_t cut_fp = (intptr_t) cut_to_frame.fp();
+   intptr_t cut_pc = (intptr_t) cut_to_frame.pc();
+ 
+   SaveFunction save_func = (SaveFunction) SharedRuntime::continuation_save_blob()->entry_point();
+-  save_func(thread, cut_sp, cut_fp, cut_pc, cont.raw_value());
++  save_func(thread, cut_sp, cut_fp, cut_pc, cont.raw_value());*/
+   return NULL;
+ }
+ 
+-- 
+1.7.0.4
+

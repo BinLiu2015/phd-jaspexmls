@@ -1,0 +1,24 @@
+From 7054d5b2626bc37b059c5374946cd86bef1237ea Mon Sep 17 00:00:00 2001
+From: Ivo Anjo <knuckles@gmail.com>
+Date: Thu, 21 Mar 2013 16:08:34 +0000
+Subject: [PATCH 3/4] Adicionado build.sh
+
+---
+ sources/build.sh |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+ create mode 100755 sources/build.sh
+
+diff --git a/sources/build.sh b/sources/build.sh
+new file mode 100755
+index 0000000..6c7bf6c
+--- /dev/null
++++ b/sources/build.sh
+@@ -0,0 +1,5 @@
++#!/bin/bash
++
++export ALT_BOOTDIR=/usr/lib64/jvm/java-6-sun/ ALT_JDK_IMPORT_PATH=/usr/lib64/jvm/java-6-sun/ ARCH_DATA_MODEL=64 BUILD_HOTSPOT=true BUILD_JAXP=false BUILD_JAXWS=false BUILD_JDK=true BUILD_LANGTOOLS=true HOTSPOT_BUILD_JOBS=16 LANG=C PARALLEL_COMPILE_JOBS=16
++export -n JAVA_HOME
++make
+-- 
+1.7.0.4
+

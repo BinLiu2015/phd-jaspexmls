@@ -1,0 +1,730 @@
+From 863559f14ea911a554bf0429003f57bceaaf878a Mon Sep 17 00:00:00 2001
+From: Ivo Anjo <knuckles@gmail.com>
+Date: Thu, 21 Mar 2013 14:30:19 +0000
+Subject: [PATCH 2/4] =?UTF-8?q?Adicionadas=20vers=C3=B5es=20actualizadas=20de=20Throwable=20/=20Continuation=20tiradas=20da=20contlib?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+contlib rev 7bd909ad44ac9a384d0d265b12233b9d45c17363
+---
+ .../jdk/src/share/classes/java/lang/Throwable.java |  413 ++++++--------------
+ .../src/share/classes/sun/misc/Continuation.java   |    7 +-
+ 2 files changed, 125 insertions(+), 295 deletions(-)
+
+diff --git a/sources/jdk/src/share/classes/java/lang/Throwable.java b/sources/jdk/src/share/classes/java/lang/Throwable.java
+index 213f5f8..6e3295c 100644
+--- a/sources/jdk/src/share/classes/java/lang/Throwable.java
++++ b/sources/jdk/src/share/classes/java/lang/Throwable.java
+@@ -25,20 +25,17 @@
+ 
+ package java.lang;
+ import  java.io.*;
+-import  java.util.*;
++
++// HACK: the JDK for the contlib-continuation JVM has a bug in this class;
++// as a temporary workaround, contlib includes a fixed version of the class taken from IcedTea6
+ 
+ /**
+- * The {@code Throwable} class is the superclass of all errors and
++ * The <code>Throwable</code> class is the superclass of all errors and
+  * exceptions in the Java language. Only objects that are instances of this
+  * class (or one of its subclasses) are thrown by the Java Virtual Machine or
+- * can be thrown by the Java {@code throw} statement. Similarly, only
++ * can be thrown by the Java <code>throw</code> statement. Similarly, only
+  * this class or one of its subclasses can be the argument type in a
+- * {@code catch} clause.
+- *
+- * For the purposes of compile-time checking of exceptions, {@code
+- * Throwable} and any subclass of {@code Throwable} that is not also a
+- * subclass of either {@link RuntimeException} or {@link Error} are
+- * regarded as checked exceptions.
++ * <code>catch</code> clause.
+  *
+  * <p>Instances of two subclasses, {@link java.lang.Error} and
+  * {@link java.lang.Exception}, are conventionally used to indicate
+@@ -73,11 +70,11 @@ import  java.util.*;
+  * permit the method to throw the cause directly.  For example, suppose
+  * a persistent collection conforms to the {@link java.util.Collection
+  * Collection} interface, and that its persistence is implemented atop
+- * {@code java.io}.  Suppose the internals of the {@code add} method
++ * <tt>java.io</tt>.  Suppose the internals of the <tt>add</tt> method
+  * can throw an {@link java.io.IOException IOException}.  The implementation
+- * can communicate the details of the {@code IOException} to its caller
+- * while conforming to the {@code Collection} interface by wrapping the
+- * {@code IOException} in an appropriate unchecked exception.  (The
++ * can communicate the details of the <tt>IOException</tt> to its caller
++ * while conforming to the <tt>Collection</tt> interface by wrapping the
++ * <tt>IOException</tt> in an appropriate unchecked exception.  (The
+  * specification for the persistent collection should indicate that it is
+  * capable of throwing such exceptions.)
+  *
+@@ -86,7 +83,7 @@ import  java.util.*;
+  * {@link #initCause(Throwable)} method.  New throwable classes that
+  * wish to allow causes to be associated with them should provide constructors
+  * that take a cause and delegate (perhaps indirectly) to one of the
+- * {@code Throwable} constructors that takes a cause.  For example:
++ * <tt>Throwable</tt> constructors that takes a cause.  For example:
+  * <pre>
+  *     try {
+  *         lowLevelOp();
+@@ -94,16 +91,16 @@ import  java.util.*;
+  *         throw new HighLevelException(le);  // Chaining-aware constructor
+  *     }
+  * </pre>
+- * Because the {@code initCause} method is public, it allows a cause to be
++ * Because the <tt>initCause</tt> method is public, it allows a cause to be
+  * associated with any throwable, even a "legacy throwable" whose
+  * implementation predates the addition of the exception chaining mechanism to
+- * {@code Throwable}. For example:
++ * <tt>Throwable</tt>. For example:
+  * <pre>
+  *     try {
+  *         lowLevelOp();
+  *     } catch (LowLevelException le) {
+  *         throw (HighLevelException)
+- *               new HighLevelException().initCause(le);  // Legacy constructor
++                 new HighLevelException().initCause(le);  // Legacy constructor
+  *     }
+  * </pre>
+  *
+@@ -121,34 +118,33 @@ import  java.util.*;
+  * use the standard exception chaining mechanism, while continuing to
+  * implement their "legacy" chaining mechanisms for compatibility.
+  *
+- * <p>Further, as of release 1.4, many general purpose {@code Throwable}
++ * <p>Further, as of release 1.4, many general purpose <tt>Throwable</tt>
+  * classes (for example {@link Exception}, {@link RuntimeException},
+  * {@link Error}) have been retrofitted with constructors that take
+  * a cause.  This was not strictly necessary, due to the existence of the
+- * {@code initCause} method, but it is more convenient and expressive to
++ * <tt>initCause</tt> method, but it is more convenient and expressive to
+  * delegate to a constructor that takes a cause.
+  *
+- * <p>By convention, class {@code Throwable} and its subclasses have two
++ * <p>By convention, class <code>Throwable</code> and its subclasses have two
+  * constructors, one that takes no arguments and one that takes a
+- * {@code String} argument that can be used to produce a detail message.
++ * <code>String</code> argument that can be used to produce a detail message.
+  * Further, those subclasses that might likely have a cause associated with
+  * them should have two more constructors, one that takes a
+- * {@code Throwable} (the cause), and one that takes a
+- * {@code String} (the detail message) and a {@code Throwable} (the
++ * <code>Throwable</code> (the cause), and one that takes a
++ * <code>String</code> (the detail message) and a <code>Throwable</code> (the
+  * cause).
+  *
+  * <p>Also introduced in release 1.4 is the {@link #getStackTrace()} method,
+  * which allows programmatic access to the stack trace information that was
+  * previously available only in text form, via the various forms of the
+  * {@link #printStackTrace()} method.  This information has been added to the
+- * <i>serialized representation</i> of this class so {@code getStackTrace}
+- * and {@code printStackTrace} will operate properly on a throwable that
++ * <i>serialized representation</i> of this class so <tt>getStackTrace</tt>
++ * and <tt>printStackTrace</tt> will operate properly on a throwable that
+  * was obtained by deserialization.
+  *
+  * @author  unascribed
+  * @author  Josh Bloch (Added exception chaining and programmatic access to
+  *          stack trace in 1.4.)
+- * @jls3 11.2 Compile-Time Checking of Exceptions
+  * @since JDK1.0
+  */
+ public class Throwable implements Serializable {
+@@ -162,7 +158,7 @@ public class Throwable implements Serializable {
+ 
+     /**
+      * Specific details about the Throwable.  For example, for
+-     * {@code FileNotFoundException}, this contains the name of
++     * <tt>FileNotFoundException</tt>, this contains the name of
+      * the file that could not be found.
+      *
+      * @serial
+@@ -194,25 +190,7 @@ public class Throwable implements Serializable {
+      */
+ 
+     /**
+-     * The list of suppressed exceptions, as returned by
+-     * {@link #getSuppressedExceptions()}.
+-     *
+-     * @serial
+-     * @since 1.7
+-     */
+-    private List<Throwable> suppressedExceptions = Collections.emptyList();
+-
+-    /** Message for trying to suppress a null exception. */
+-    private static final String NULL_CAUSE_MESSAGE = "Cannot suppress a null exception.";
+-
+-    /** Caption  for labeling causative exception stack traces */
+-    private static final String CAUSE_CAPTION = "Caused by: ";
+-
+-    /** Caption for labeling suppressed exception stack traces */
+-    private static final String SUPPRESSED_CAPTION = "Suppressed: ";
+-
+-    /**
+-     * Constructs a new throwable with {@code null} as its detail message.
++     * Constructs a new throwable with <code>null</code> as its detail message.
+      * The cause is not initialized, and may subsequently be initialized by a
+      * call to {@link #initCause}.
+      *
+@@ -242,7 +220,7 @@ public class Throwable implements Serializable {
+     /**
+      * Constructs a new throwable with the specified detail message and
+      * cause.  <p>Note that the detail message associated with
+-     * {@code cause} is <i>not</i> automatically incorporated in
++     * <code>cause</code> is <i>not</i> automatically incorporated in
+      * this throwable's detail message.
+      *
+      * <p>The {@link #fillInStackTrace()} method is called to initialize
+@@ -251,7 +229,7 @@ public class Throwable implements Serializable {
+      * @param  message the detail message (which is saved for later retrieval
+      *         by the {@link #getMessage()} method).
+      * @param  cause the cause (which is saved for later retrieval by the
+-     *         {@link #getCause()} method).  (A {@code null} value is
++     *         {@link #getCause()} method).  (A <tt>null</tt> value is
+      *         permitted, and indicates that the cause is nonexistent or
+      *         unknown.)
+      * @since  1.4
+@@ -264,8 +242,8 @@ public class Throwable implements Serializable {
+ 
+     /**
+      * Constructs a new throwable with the specified cause and a detail
+-     * message of {@code (cause==null ? null : cause.toString())} (which
+-     * typically contains the class and detail message of {@code cause}).
++     * message of <tt>(cause==null ? null : cause.toString())</tt> (which
++     * typically contains the class and detail message of <tt>cause</tt>).
+      * This constructor is useful for throwables that are little more than
+      * wrappers for other throwables (for example, {@link
+      * java.security.PrivilegedActionException}).
+@@ -274,7 +252,7 @@ public class Throwable implements Serializable {
+      * the stack trace data in the newly created throwable.
+      *
+      * @param  cause the cause (which is saved for later retrieval by the
+-     *         {@link #getCause()} method).  (A {@code null} value is
++     *         {@link #getCause()} method).  (A <tt>null</tt> value is
+      *         permitted, and indicates that the cause is nonexistent or
+      *         unknown.)
+      * @since  1.4
+@@ -288,8 +266,8 @@ public class Throwable implements Serializable {
+     /**
+      * Returns the detail message string of this throwable.
+      *
+-     * @return  the detail message string of this {@code Throwable} instance
+-     *          (which may be {@code null}).
++     * @return  the detail message string of this <tt>Throwable</tt> instance
++     *          (which may be <tt>null</tt>).
+      */
+     public String getMessage() {
+         return detailMessage;
+@@ -300,7 +278,7 @@ public class Throwable implements Serializable {
+      * Subclasses may override this method in order to produce a
+      * locale-specific message.  For subclasses that do not override this
+      * method, the default implementation returns the same result as
+-     * {@code getMessage()}.
++     * <code>getMessage()</code>.
+      *
+      * @return  The localized description of this throwable.
+      * @since   JDK1.1
+@@ -310,22 +288,22 @@ public class Throwable implements Serializable {
+     }
+ 
+     /**
+-     * Returns the cause of this throwable or {@code null} if the
++     * Returns the cause of this throwable or <code>null</code> if the
+      * cause is nonexistent or unknown.  (The cause is the throwable that
+      * caused this throwable to get thrown.)
+      *
+      * <p>This implementation returns the cause that was supplied via one of
+-     * the constructors requiring a {@code Throwable}, or that was set after
++     * the constructors requiring a <tt>Throwable</tt>, or that was set after
+      * creation with the {@link #initCause(Throwable)} method.  While it is
+      * typically unnecessary to override this method, a subclass can override
+      * it to return a cause set by some other means.  This is appropriate for
+      * a "legacy chained throwable" that predates the addition of chained
+-     * exceptions to {@code Throwable}.  Note that it is <i>not</i>
+-     * necessary to override any of the {@code PrintStackTrace} methods,
+-     * all of which invoke the {@code getCause} method to determine the
++     * exceptions to <tt>Throwable</tt>.  Note that it is <i>not</i>
++     * necessary to override any of the <tt>PrintStackTrace</tt> methods,
++     * all of which invoke the <tt>getCause</tt> method to determine the
+      * cause of a throwable.
+      *
+-     * @return  the cause of this throwable or {@code null} if the
++     * @return  the cause of this throwable or <code>null</code> if the
+      *          cause is nonexistent or unknown.
+      * @since 1.4
+      */
+@@ -345,11 +323,11 @@ public class Throwable implements Serializable {
+      * even once.
+      *
+      * @param  cause the cause (which is saved for later retrieval by the
+-     *         {@link #getCause()} method).  (A {@code null} value is
++     *         {@link #getCause()} method).  (A <tt>null</tt> value is
+      *         permitted, and indicates that the cause is nonexistent or
+      *         unknown.)
+-     * @return  a reference to this {@code Throwable} instance.
+-     * @throws IllegalArgumentException if {@code cause} is this
++     * @return  a reference to this <code>Throwable</code> instance.
++     * @throws IllegalArgumentException if <code>cause</code> is this
+      *         throwable.  (A throwable cannot be its own cause.)
+      * @throws IllegalStateException if this throwable was
+      *         created with {@link #Throwable(Throwable)} or
+@@ -375,12 +353,13 @@ public class Throwable implements Serializable {
+      * <li> the result of invoking this object's {@link #getLocalizedMessage}
+      *      method
+      * </ul>
+-     * If {@code getLocalizedMessage} returns {@code null}, then just
++     * If <tt>getLocalizedMessage</tt> returns <tt>null</tt>, then just
+      * the class name is returned.
+      *
+      * @return a string representation of this throwable.
+      */
+-    public String toString() {
++    @Override
++public String toString() {
+         String s = getClass().getName();
+         String message = getLocalizedMessage();
+         return (message != null) ? (s + ": " + message) : s;
+@@ -389,8 +368,8 @@ public class Throwable implements Serializable {
+     /**
+      * Prints this throwable and its backtrace to the
+      * standard error stream. This method prints a stack trace for this
+-     * {@code Throwable} object on the error output stream that is
+-     * the value of the field {@code System.err}. The first line of
++     * <code>Throwable</code> object on the error output stream that is
++     * the value of the field <code>System.err</code>. The first line of
+      * output contains the result of the {@link #toString()} method for
+      * this object.  Remaining lines represent data previously recorded by
+      * the method {@link #fillInStackTrace()}. The format of this
+@@ -435,7 +414,7 @@ public class Throwable implements Serializable {
+      *         at Junk.c(Junk.java:21)
+      *         ... 3 more
+      * </pre>
+-     * Note the presence of lines containing the characters {@code "..."}.
++     * Note the presence of lines containing the characters <tt>"..."</tt>.
+      * These lines indicate that the remainder of the stack trace for this
+      * exception matches the indicated number of frames from the bottom of the
+      * stack trace of the exception that was caused by this exception (the
+@@ -488,52 +467,6 @@ public class Throwable implements Serializable {
+      * class LowLevelException extends Exception {
+      * }
+      * </pre>
+-     * As of release 7, the platform supports the notion of
+-     * <i>suppressed exceptions</i> (in conjunction with automatic
+-     * resource management blocks). Any exceptions that were
+-     * suppressed in order to deliver an exception are printed out
+-     * beneath the stack trace.  The format of this information
+-     * depends on the implementation, but the following example may be
+-     * regarded as typical:
+-     *
+-     * <pre>
+-     * Exception in thread "main" java.lang.Exception: Something happened
+-     *  at Foo.bar(Foo.java:10)
+-     *  at Foo.main(Foo.java:5)
+-     *  Suppressed: Resource$CloseFailException: Resource ID = 0
+-     *          at Resource.close(Resource.java:26)
+-     *          at Foo.bar(Foo.java:9)
+-     *          ... 1 more
+-     * </pre>
+-     * Note that the "... n more" notation is used on suppressed exceptions
+-     * just at it is used on causes. Unlike causes, suppressed exceptions are
+-     * indented beyond their "containing exceptions."
+-     *
+-     * <p>An exception can have both a cause and one or more suppressed
+-     * exceptions:
+-     * <pre>
+-     * Exception in thread "main" java.lang.Exception: Main block
+-     *  at Foo3.main(Foo3.java:7)
+-     *  Suppressed: Resource$CloseFailException: Resource ID = 2
+-     *          at Resource.close(Resource.java:26)
+-     *          at Foo3.main(Foo3.java:5)
+-     *  Suppressed: Resource$CloseFailException: Resource ID = 1
+-     *          at Resource.close(Resource.java:26)
+-     *          at Foo3.main(Foo3.java:5)
+-     * Caused by: java.lang.Exception: I did it
+-     *  at Foo3.main(Foo3.java:8)
+-     * </pre>
+-     * Likewise, a suppressed exception can have a cause:
+-     * <pre>
+-     * Exception in thread "main" java.lang.Exception: Main block
+-     *  at Foo4.main(Foo4.java:6)
+-     *  Suppressed: Resource2$CloseFailException: Resource ID = 1
+-     *          at Resource2.close(Resource2.java:20)
+-     *          at Foo4.main(Foo4.java:5)
+-     *  Caused by: java.lang.Exception: Rats, you caught me
+-     *          at Resource2$CloseFailException.<init>(Resource2.java:45)
+-     *          ... 2 more
+-     * </pre>
+      */
+     public void printStackTrace() {
+         printStackTrace(System.err);
+@@ -542,140 +475,103 @@ public class Throwable implements Serializable {
+     /**
+      * Prints this throwable and its backtrace to the specified print stream.
+      *
+-     * @param s {@code PrintStream} to use for output
++     * @param s <code>PrintStream</code> to use for output
+      */
+     public void printStackTrace(PrintStream s) {
+-        printStackTrace(new WrappedPrintStream(s));
+-    }
+-
+-    private void printStackTrace(PrintStreamOrWriter s) {
+-        // Guard against malicious overrides of Throwable.equals by
+-        // using a Set with identity equality semantics.
+-        Set<Throwable> dejaVu =
+-            Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+-        dejaVu.add(this);
+-
+-        synchronized (s.lock()) {
+-            // Print our stack trace
++        synchronized (s) {
+             s.println(this);
+             StackTraceElement[] trace = getOurStackTrace();
+-            for (StackTraceElement traceElement : trace)
+-                s.println("\tat " + traceElement);
++            for (int i=0; i < trace.length; i++)
++                s.println("\tat " + trace[i]);
+ 
+-            // Print suppressed exceptions, if any
+-            for (Throwable se : suppressedExceptions)
+-                se.printEnclosedStackTrace(s, trace, SUPPRESSED_CAPTION, "\t", dejaVu);
+-
+-            // Print cause, if any
+             Throwable ourCause = getCause();
+             if (ourCause != null)
+-                ourCause.printEnclosedStackTrace(s, trace, CAUSE_CAPTION, "", dejaVu);
++                ourCause.printStackTraceAsCause(s, trace);
+         }
+     }
+ 
+     /**
+-     * Print our stack trace as an enclosed exception for the specified
+-     * stack trace.
++     * Print our stack trace as a cause for the specified stack trace.
+      */
+-    private void printEnclosedStackTrace(PrintStreamOrWriter s,
+-                                         StackTraceElement[] enclosingTrace,
+-                                         String caption,
+-                                         String prefix,
+-                                         Set<Throwable> dejaVu) {
+-        assert Thread.holdsLock(s.lock());
+-        if (dejaVu.contains(this)) {
+-            s.println("\t[CIRCULAR REFERENCE:" + this + "]");
+-        } else {
+-            dejaVu.add(this);
+-            // Compute number of frames in common between this and enclosing trace
+-            StackTraceElement[] trace = getOurStackTrace();
+-            int m = trace.length - 1;
+-            int n = enclosingTrace.length - 1;
+-            while (m >= 0 && n >=0 && trace[m].equals(enclosingTrace[n])) {
+-                m--; n--;
+-            }
+-            int framesInCommon = trace.length - 1 - m;
+-
+-            // Print our stack trace
+-            s.println(prefix + caption + this);
+-            for (int i = 0; i <= m; i++)
+-                s.println(prefix + "\tat " + trace[i]);
+-            if (framesInCommon != 0)
+-                s.println(prefix + "\t... " + framesInCommon + " more");
+-
+-            // Print suppressed exceptions, if any
+-            for (Throwable se : suppressedExceptions)
+-                se.printEnclosedStackTrace(s, trace, SUPPRESSED_CAPTION,
+-                                           prefix +"\t", dejaVu);
+-
+-            // Print cause, if any
+-            Throwable ourCause = getCause();
+-            if (ourCause != null)
+-                ourCause.printEnclosedStackTrace(s, trace, CAUSE_CAPTION, prefix, dejaVu);
++    private void printStackTraceAsCause(PrintStream s,
++                                        StackTraceElement[] causedTrace)
++    {
++        // assert Thread.holdsLock(s);
++
++        // Compute number of frames in common between this and caused
++        StackTraceElement[] trace = getOurStackTrace();
++        int m = trace.length-1, n = causedTrace.length-1;
++        while (m >= 0 && n >=0 && trace[m].equals(causedTrace[n])) {
++            m--; n--;
+         }
++        int framesInCommon = trace.length - 1 - m;
++
++        s.println("Caused by: " + this);
++        for (int i=0; i <= m; i++)
++            s.println("\tat " + trace[i]);
++        if (framesInCommon != 0)
++            s.println("\t... " + framesInCommon + " more");
++
++        // Recurse if we have a cause
++        Throwable ourCause = getCause();
++        if (ourCause != null)
++            ourCause.printStackTraceAsCause(s, trace);
+     }
+ 
+     /**
+      * Prints this throwable and its backtrace to the specified
+      * print writer.
+      *
+-     * @param s {@code PrintWriter} to use for output
++     * @param s <code>PrintWriter</code> to use for output
+      * @since   JDK1.1
+      */
+     public void printStackTrace(PrintWriter s) {
+-        printStackTrace(new WrappedPrintWriter(s));
+-    }
+-
+-    /**
+-     * Wrapper class for PrintStream and PrintWriter to enable a single
+-     * implementation of printStackTrace.
+-     */
+-    private abstract static class PrintStreamOrWriter {
+-        /** Returns the object to be locked when using this StreamOrWriter */
+-        abstract Object lock();
+-
+-        /** Prints the specified string as a line on this StreamOrWriter */
+-        abstract void println(Object o);
+-    }
+-
+-    private static class WrappedPrintStream extends PrintStreamOrWriter {
+-        private final PrintStream printStream;
+-
+-        WrappedPrintStream(PrintStream printStream) {
+-            this.printStream = printStream;
+-        }
+-
+-        Object lock() {
+-            return printStream;
+-        }
++        synchronized (s) {
++            s.println(this);
++            StackTraceElement[] trace = getOurStackTrace();
++            for (int i=0; i < trace.length; i++)
++                s.println("\tat " + trace[i]);
+ 
+-        void println(Object o) {
+-            printStream.println(o);
++            Throwable ourCause = getCause();
++            if (ourCause != null)
++                ourCause.printStackTraceAsCause(s, trace);
+         }
+     }
+ 
+-    private static class WrappedPrintWriter extends PrintStreamOrWriter {
+-        private final PrintWriter printWriter;
+-
+-        WrappedPrintWriter(PrintWriter printWriter) {
+-            this.printWriter = printWriter;
+-        }
+-
+-        Object lock() {
+-            return printWriter;
+-        }
++    /**
++     * Print our stack trace as a cause for the specified stack trace.
++     */
++    private void printStackTraceAsCause(PrintWriter s,
++                                        StackTraceElement[] causedTrace)
++    {
++        // assert Thread.holdsLock(s);
+ 
+-        void println(Object o) {
+-            printWriter.println(o);
++        // Compute number of frames in common between this and caused
++        StackTraceElement[] trace = getOurStackTrace();
++        int m = trace.length-1, n = causedTrace.length-1;
++        while (m >= 0 && n >=0 && trace[m].equals(causedTrace[n])) {
++            m--; n--;
+         }
++        int framesInCommon = trace.length - 1 - m;
++
++        s.println("Caused by: " + this);
++        for (int i=0; i <= m; i++)
++            s.println("\tat " + trace[i]);
++        if (framesInCommon != 0)
++            s.println("\t... " + framesInCommon + " more");
++
++        // Recurse if we have a cause
++        Throwable ourCause = getCause();
++        if (ourCause != null)
++            ourCause.printStackTraceAsCause(s, trace);
+     }
+ 
+     /**
+      * Fills in the execution stack trace. This method records within this
+-     * {@code Throwable} object information about the current state of
++     * <code>Throwable</code> object information about the current state of
+      * the stack frames for the current thread.
+      *
+-     * @return  a reference to this {@code Throwable} instance.
++     * @return  a reference to this <code>Throwable</code> instance.
+      * @see     java.lang.Throwable#printStackTrace()
+      */
+     public synchronized native Throwable fillInStackTrace();
+@@ -697,7 +593,7 @@ public class Throwable implements Serializable {
+      * this throwable is permitted to return a zero-length array from this
+      * method.  Generally speaking, the array returned by this method will
+      * contain one element for every frame that would be printed by
+-     * {@code printStackTrace}.
++     * <tt>printStackTrace</tt>.
+      *
+      * @return an array of stack trace elements representing the stack trace
+      *         pertaining to this throwable.
+@@ -730,14 +626,14 @@ public class Throwable implements Serializable {
+      * read from a serialization stream.
+      *
+      * @param   stackTrace the stack trace elements to be associated with
+-     * this {@code Throwable}.  The specified array is copied by this
++     * this <code>Throwable</code>.  The specified array is copied by this
+      * call; changes in the specified array after the method invocation
+-     * returns will have no affect on this {@code Throwable}'s stack
++     * returns will have no affect on this <code>Throwable</code>'s stack
+      * trace.
+      *
+-     * @throws NullPointerException if {@code stackTrace} is
+-     *         {@code null}, or if any of the elements of
+-     *         {@code stackTrace} are {@code null}
++     * @throws NullPointerException if <code>stackTrace</code> is
++     *         <code>null</code>, or if any of the elements of
++     *         <code>stackTrace</code> are <code>null</code>
+      *
+      * @since  1.4
+      */
+@@ -753,89 +649,22 @@ public class Throwable implements Serializable {
+     /**
+      * Returns the number of elements in the stack trace (or 0 if the stack
+      * trace is unavailable).
+-     *
+-     * package-protection for use by SharedSecrets.
+      */
+-    native int getStackTraceDepth();
++    private native int getStackTraceDepth();
+ 
+     /**
+      * Returns the specified element of the stack trace.
+      *
+-     * package-protection for use by SharedSecrets.
+-     *
+      * @param index index of the element to return.
+-     * @throws IndexOutOfBoundsException if {@code index < 0 ||
+-     *         index >= getStackTraceDepth() }
++     * @throws IndexOutOfBoundsException if <tt>index &lt; 0 ||
++     *         index &gt;= getStackTraceDepth() </tt>
+      */
+-    native StackTraceElement getStackTraceElement(int index);
+-
+-    private void readObject(ObjectInputStream s)
+-        throws IOException, ClassNotFoundException {
+-        s.defaultReadObject();     // read in all fields
+-        List<Throwable> suppressed = Collections.emptyList();
+-        if (suppressedExceptions != null &&
+-            !suppressedExceptions.isEmpty()) { // Copy Throwables to new list
+-            suppressed = new ArrayList<Throwable>();
+-            for(Throwable t : suppressedExceptions) {
+-                if (t == null)
+-                    throw new NullPointerException(NULL_CAUSE_MESSAGE);
+-                suppressed.add(t);
+-            }
+-        }
+-        suppressedExceptions = suppressed;
+-    }
++    private native StackTraceElement getStackTraceElement(int index);
+ 
+-    private synchronized void writeObject(ObjectOutputStream s)
++    private synchronized void writeObject(java.io.ObjectOutputStream s)
+         throws IOException
+     {
+         getOurStackTrace();  // Ensure that stackTrace field is initialized.
+         s.defaultWriteObject();
+     }
+-
+-    /**
+-     * Adds the specified exception to the list of exceptions that
+-     * were suppressed, typically by the automatic resource management
+-     * statement, in order to deliver this exception.
+-     *
+-     * <p>Note that when one exception {@linkplain
+-     * #initCause(Throwable) causes} another exception, the first
+-     * exception is usually caught and then the second exception is
+-     * thrown in response.  In contrast, when one exception suppresses
+-     * another, two exceptions are thrown in sibling code blocks, such
+-     * as in a {@code try} block and in its {@code finally} block, and
+-     * control flow can only continue with one exception so the second
+-     * is recorded as a suppressed exception of the first.
+-     *
+-     * @param exception the exception to be added to the list of
+-     *        suppressed exceptions
+-     * @throws NullPointerException if {@code exception} is null
+-     * @throws IllegalArgumentException if {@code exception} is this
+-     *         throwable; a throwable cannot suppress itself.
+-     * @since 1.7
+-     */
+-    public synchronized void addSuppressedException(Throwable exception) {
+-        if (exception == null)
+-            throw new NullPointerException(NULL_CAUSE_MESSAGE);
+-        if (exception == this)
+-            throw new IllegalArgumentException("Self-suppression not permitted");
+-
+-        if (suppressedExceptions.size() == 0)
+-            suppressedExceptions = new ArrayList<Throwable>();
+-        suppressedExceptions.add(exception);
+-    }
+-
+-    private static final Throwable[] EMPTY_THROWABLE_ARRAY = new Throwable[0];
+-
+-    /**
+-     * Returns an array containing all of the exceptions that were
+-     * suppressed, typically by the automatic resource management
+-     * statement, in order to deliver this exception.
+-     *
+-     * @return an array containing all of the exceptions that were
+-     *         suppressed to deliver this exception.
+-     * @since 1.7
+-     */
+-    public Throwable[] getSuppressedExceptions() {
+-        return suppressedExceptions.toArray(EMPTY_THROWABLE_ARRAY);
+-    }
+ }
+diff --git a/sources/jdk/src/share/classes/sun/misc/Continuation.java b/sources/jdk/src/share/classes/sun/misc/Continuation.java
+index e3d44e8..be13045 100644
+--- a/sources/jdk/src/share/classes/sun/misc/Continuation.java
++++ b/sources/jdk/src/share/classes/sun/misc/Continuation.java
+@@ -30,7 +30,7 @@ package sun.misc;
+  *
+  * @author Hiroshi Yamauchi
+  */
+-public class Continuation {
++public final class Continuation {
+ 
+     private static native void registerNatives();
+     static {
+@@ -40,7 +40,7 @@ public class Continuation {
+     /**
+      * The stack frames data
+      */
+-    protected volatile Object stack;
++    public volatile Object stack;
+ 
+     /**
+      * The list of compiled code PCs in the stack. Needed to reclaim
+@@ -77,6 +77,7 @@ public class Continuation {
+      * reference count of the compiled code (nmethod) is incremented
+      * upon a continuation save and decremented by this finalizer.
+      */
++    @Override
+     protected void finalize() throws Throwable {
+         if (pcs == null || pcs.length == 0) {
+             return;
+@@ -116,7 +117,7 @@ public class Continuation {
+                 "Continuation hasn't been saved or tried to resume for a second time.");
+         }
+         Object s = stack;
+-        stack = null; // resumable only once
++        //stack = null; // resumable only once
+         resume_cont(s, rv);
+     }
+ 
+-- 
+1.7.0.4
+
