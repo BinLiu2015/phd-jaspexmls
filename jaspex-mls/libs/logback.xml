@@ -1,0 +1,34 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern> [%level][%thread] %msg%n</pattern>
+    </encoder>
+    <!--<target>System.err</target>-->
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+  <!-- Silenciar mensagens de inserted speculation -->
+  <!--<logger name="jaspex.speculation.newspec.InsertContinuationSpeculationMethodVisitor" level="INFO"/>-->
+
+  <!-- Activar mensagens de classes carregadas -->
+  <!--<logger name="jaspex.speculation.SpeculativeClassLoader" level="TRACE"/>-->
+
+  <!-- Silenciar nonTransactionalActionAttempted -->
+  <!--<logger name="jaspex.speculation.runtime.SpeculationControl" level="INFO"/>-->
+  <!-- Extra output nonTransactionalActionAttempted -->
+  <!--<logger name="jaspex.speculation.runtime.SpeculationControl" level="TRACE"/>-->
+
+  <!-- Extra output no FixFutureMultipleControlFlows -->
+  <!--<logger name="jaspex.speculation.newspec.FixFutureMultipleControlFlows" level="TRACE"/>-->
+  <!-- Activar output RemoveOverspeculation -->
+  <!--<logger name="jaspex.speculation.newspec.RemoveOverspeculation" level="TRACE"/>-->
+
+  <!-- Silenciar erros/warnings do ASM em classes geradas -->
+  <!--<logger name="jaspex.transactifier.Transactifier" level="INFO"/>-->
+
+  <!-- Silenciar output txstats -->
+  <!--<logger name="jaspex.rulamstm.Transaction" level="WARN"/>-->
+</configuration>

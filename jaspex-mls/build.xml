@@ -1,0 +1,36 @@
+<project name="jaspex" basedir="." default="main">
+	<property name="src.dir"   value="src"/>
+	<property name="build.dir" value="build"/>
+	<property name="libs.dir"  value="libs"/>
+
+	<path id="jars-classpath">
+		<fileset dir="${libs.dir}" >
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" source="1.6" target="1.6"
+			deprecation="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<compilerarg value="-Xlint:unchecked"/>
+			<classpath><path refid="jars-classpath"/></classpath>
+		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}" includes="**/*.txt"/>
+		</copy>
+	</target>
+	<target name="build" depends="compile"/> <!-- alias -->
+
+	<target name="main" depends="clean,compile"/>
+
+	<target name="clientrt-jar" depends="compile">
+		<jar destfile="jaspex-clientrt.jar">
+			<fileset dir="${build.dir}" includes="**/clientrt/*.class"/>
+		</jar>
+	</target>
+</project>

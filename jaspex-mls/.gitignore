@@ -1,0 +1,9 @@
+build/
+cache/
+output.dot
+hotspot.log
+hs_err_pid*.log
+trace-*.txt
+autoskip-*.txt
+tunnel.dat
+jaspex-clientrt.jar
