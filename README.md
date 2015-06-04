@@ -2,7 +2,9 @@
 
 In this repository you will find the JaSPEx-MLS framework for automatically parallelizing sequential Java applications, speeding them up on modern multicore hardware.
 
-The framework does this by analyzing Java applications --- from compiled bytecode, *no* source code access is needed --- and then by modifying them as they are loaded by the JVM to use Software Transactional Memory (STM) and Method-Level Speculation (MLS). The framework also requires a Java VM with support for continuations, and I include a special build of OpenJDK for this purpose based on [Hiroshi2012](http://hiroshiyamauchi.blogspot.pt/2012/10/the-jvm-continuation-contribution.html).
+The framework does this by analyzing Java applications --- from compiled bytecode, **no source code access is needed** --- and then by modifying them as they are loaded by the JVM to use Software Transactional Memory (STM) and Method-Level Speculation (MLS).
+
+The framework also requires a Java VM with support for continuations, and I include a special build of OpenJDK for this purpose based on [Hiroshi2012](http://hiroshiyamauchi.blogspot.pt/2012/10/the-jvm-continuation-contribution.html).
 
 The end result is that sequential applications, when executed by JaSPEx-MLS on top of the supplied OpenJDK build can surpass normal OpenJDK builds in performance. Hopefully ;)
 
@@ -22,7 +24,7 @@ I developed JaSPEx-MLS as part of my PhD dissertation, which I will defend on Ju
 
 ## Running JaSPEx-MLS
 
-TBA
+See [RUNNING.md](RUNNING.md)
 
 ## Why now?
 
