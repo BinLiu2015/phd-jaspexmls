@@ -8,7 +8,7 @@ The framework also requires a Java VM with support for continuations, and I incl
 
 The end result is that sequential applications, when executed by JaSPEx-MLS on top of the supplied OpenJDK build can surpass normal OpenJDK builds in performance. Hopefully ;)
 
-I developed JaSPEx-MLS as part of my PhD dissertation, which I will defend on June 2015. I currently don't have plans to develop it further, but I wanted to get it out there, so that others can learn and take from the code, if they find it useful, instead of it just bit-rotting in my SSD.
+I developed JaSPEx-MLS as part of my PhD dissertation, which you will also find [here](./dissertation/anjo-phdthesis.pdf). I currently don't have plans to develop it further, but I wanted to get it out there, so that others can learn and take from the code, if they find it useful, instead of it just bit-rotting in my SSD.
 
 ## What will you find in this repository?
 
@@ -30,7 +30,7 @@ See [RUNNING.md](RUNNING.md)
 
 I feel that if I don't put this out there now, I may never do it :)
 
-I was born in sunny Portugal and as I was working on this codebase alone, I ended up writing many of the comments in the code in Portuguese (the code itself is in English). My original plan was to clean up the code and translate the comments before pushing it to github, but as in the meantime I started on other projects I never got around to it so publishing it right now is a way of ~shaming~ motivating me to not give up on that project.
+I was born in sunny Portugal and as I was working on this codebase alone, I ended up writing many of the comments in the code in Portuguese (the code itself is in English). My original plan was to clean up the code and translate the comments before pushing it to github, but as in the meantime I started on other projects I never got around to it so publishing it right now is a way of ~shaming~ motivating me to not give up on that plan.
 
 All of my code is GPLv3+, so feel free to play with it, and have a nice day!
 
